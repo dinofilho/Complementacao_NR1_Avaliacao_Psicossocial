@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Complementação NR‑1 – Avaliação Psicossocial</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    @media print {
+      .no-print { display: none !important; }
+      .print\:block { display: block !important; }
+      body { background: #fff; }
+      .card { box-shadow: none !important; border: 1px solid #e5e7eb; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <header class="bg-blue-900 text-white py-6 shadow">
+    <div class="max-w-5xl mx-auto px-4 flex items-center justify-between">
+      <h1 class="text-xl sm:text-2xl font-bold">Complementação NR‑1 • Avaliação Psicossocial</h1>
+      <button class="no-print bg-yellow-400 text-blue-900 font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-300" onclick="window.print()">Salvar/Imprimir PDF</button>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-6 space-y-8">
+    <!-- Identificação -->
+    <section class="card bg-white p-5 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4">Identificação do Avaliado</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <label class="block">
+          <span class="text-sm text-gray-600">Nome completo</span>
+          <input id="nome" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-gray-600">CPF</span>
+          <input id="cpf" type="text" placeholder="000.000.000-00" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-gray-600">Cargo/Função</span>
+          <input id="cargo" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+        </label>
+        <label class="block">
+          <span class="text-sm text-gray-600">Setor/Unidade</span>
+          <input id="setor" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+        </label>
+        <label class="block md:col-span-2">
+          <span class="text-sm text-gray-600">Data</span>
+          <input id="data" type="date" class="mt-1 w-full md:w-64 border rounded-lg p-2 focus:ring focus:outline-none" />
+        </label>
+      </div>
+    </section>
+
+    <!-- Instruções -->
+    <section class="card bg-white p-5 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-2">Instruções</h2>
+      <p class="text-sm text-gray-700">Leia cada questão e escolha apenas uma alternativa. A pontuação é atribuída assim: <strong>A = 3</strong>, <strong>B = 2</strong>, <strong>C = 1</strong>, <strong>D = 0</strong>. O resultado final é apresentado com gráficos e classificação de risco psicossocial.</p>
+    </section>
+
+    <!-- Questionário -->
+    <section id="quiz" class="card bg-white p-5 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4">Questionário (20 questões)</h2>
+      <div class="space-y-5">
+        <!-- Helper to render each question -->
+        <div id="questions" class="space-y-6"></div>
+      </div>
+      <div class="mt-6 flex items-center gap-3">
+        <button id="btnCalcular" class="no-print bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800">Calcular resultado</button>
+        <button id="btnLimpar" class="no-print bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300">Limpar respostas</button>
+      </div>
+    </section>
+
+    <!-- Resultado / Gráficos -->
+    <section id="resultadoCard" class="card bg-white p-5 rounded-2xl shadow hidden print:block">
+      <h2 class="text-lg font-semibold mb-2">Resultado</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="p-3 border rounded-xl">
+          <h3 class="font-medium mb-2">Resumo</h3>
+          <p class="text-sm">Pontuação total: <strong><span id="pontosTotais">0</span> / 60</strong></p>
+          <p class="text-sm">Percentual: <strong><span id="percentual">0</span>%</strong></p>
+          <p class="text-sm">Classificação: <strong><span id="classificacao">—</span></strong></p>
+        </div>
+        <div class="p-3 border rounded-xl">
+          <h3 class="font-medium mb-2">Indicador Geral</h3>
+          <canvas id="chartGeral" height="200"></canvas>
+        </div>
+        <div class="p-3 border rounded-xl lg:col-span-1">
+          <h3 class="font-medium mb-2">Dimensões</h3>
+          <canvas id="chartDim" height="200"></canvas>
+        </div>
+      </div>
+
+      <div class="mt-6">
+        <h3 class="font-medium mb-2">Mapa de Respostas</h3>
+        <div class="overflow-auto border rounded-xl">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="p-2 text-left">#</th>
+                <th class="p-2 text-left">Resposta</th>
+                <th class="p-2 text-left">Pontos</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyResumo"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="border rounded-xl p-4">
+          <h3 class="font-medium mb-2">Interpretação</h3>
+          <ul class="list-disc pl-6 text-sm space-y-1">
+            <li><span class="font-semibold">45–60 (Baixo risco):</span> equilíbrio emocional e ambiente saudável.</li>
+            <li><span class="font-semibold">30–44 (Risco moderado):</span> sinais de desgaste ou estresse pontual.</li>
+            <li><span class="font-semibold">0–29 (Alto risco):</span> probabilidade de sobrecarga emocional e estresse crônico.</li>
+          </ul>
+        </div>
+        <div class="border rounded-xl p-4">
+          <h3 class="font-medium mb-2">Assinaturas</h3>
+          <div class="grid grid-cols-1 gap-6 mt-2">
+            <div>
+              <div class="h-12 border-b"></div>
+              <p class="text-xs mt-1 text-gray-600">Assinatura do Avaliado</p>
+            </div>
+            <div>
+              <div class="h-12 border-b"></div>
+              <p class="text-xs mt-1 text-gray-600">Assinatura do Responsável</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="text-xs text-gray-500">
+      <p>Nota: Este instrumento é complementar ao gerenciamento de riscos ocupacionais (GRO) e à NR‑1. Não substitui avaliação clínica.</p>
+    </section>
+  </main>
+
+  <script>
+    // ---------------------- Definição do questionário ----------------------
+    const questions = [
+      { t: 'Como você descreveria seu nível de satisfação com o trabalho atual?', a: ['Muito satisfeito', 'Satisfeito', 'Indiferente', 'Insatisfeito'] },
+      { t: 'Você sente que é valorizado pela empresa onde trabalha?', a: ['Sempre', 'Às vezes', 'Raramente', 'Nunca'] },
+      { t: 'Com que frequência você sente estresse durante o expediente?', a: ['Nunca', 'Raramente', 'Frequentemente', 'Todos os dias'] },
+      { t: 'Você considera que seu ambiente de trabalho é seguro e saudável?', a: ['Sim, totalmente', 'Parcialmente', 'Pouco', 'Nada seguro'] },
+      { t: 'Como é a sua relação com seus colegas de trabalho?', a: ['Excelente', 'Boa', 'Regular', 'Ruim'] },
+      { t: 'Quando ocorre um conflito, você costuma:', a: ['Buscar diálogo e solução', 'Evitar o assunto', 'Ficar irritado e reagir', 'Ignorar totalmente'] },
+      { t: 'Você sente que tem controle sobre suas atividades diárias no trabalho?', a: ['Sempre', 'Na maioria das vezes', 'Raramente', 'Nunca'] },
+      { t: 'Com que frequência você leva preocupações do trabalho para casa?', a: ['Nunca', 'Raramente', 'Frequentemente', 'Sempre'] },
+      { t: 'Você se sente motivado para iniciar o dia de trabalho?', a: ['Sempre', 'Às vezes', 'Raramente', 'Nunca'] },
+      { t: 'Como você reage diante de pressão e prazos curtos?', a: ['Mantenho a calma e organizo o tempo', 'Fico ansioso, mas cumpro as tarefas', 'Tenho dificuldade de lidar', 'Fico totalmente estressado'] },
+      { t: 'Você considera que sua liderança é justa e equilibrada?', a: ['Sempre', 'Na maioria das vezes', 'Às vezes', 'Nunca'] },
+      { t: 'Você sente apoio emocional de seus colegas e gestores?', a: ['Sim, totalmente', 'Parcialmente', 'Raramente', 'Não'] },
+      { t: 'Quando algo dá errado, você tende a:', a: ['Buscar soluções', 'Ficar desmotivado', 'Culpabilizar os outros', 'Ignorar o problema'] },
+      { t: 'Você tem enfrentado dificuldades para dormir devido ao trabalho?', a: ['Nunca', 'Raramente', 'Às vezes', 'Frequentemente'] },
+      { t: 'Você percebe equilíbrio entre sua vida pessoal e profissional?', a: ['Sim, totalmente equilibrado', 'Parcialmente equilibrado', 'Pouco equilibrado', 'Desequilibrado'] },
+      { t: 'Como você descreveria sua energia durante o expediente?', a: ['Alta e constante', 'Boa, mas varia', 'Baixa', 'Muito baixa'] },
+      { t: 'Você sente liberdade para expressar opiniões na empresa?', a: ['Sempre', 'Às vezes', 'Raramente', 'Nunca'] },
+      { t: 'Você sente que sua função contribui para algo maior na empresa?', a: ['Sim, com certeza', 'Parcialmente', 'Pouco', 'Não vejo propósito'] },
+      { t: 'Você percebe sinais de ansiedade, irritação ou fadiga constantes?', a: ['Nunca', 'Às vezes', 'Frequentemente', 'Sempre'] },
+      { t: 'Você acredita que teria apoio psicológico se precisasse?', a: ['Sim, imediato', 'Provável', 'Pouco provável', 'Não'] },
+    ];
+
+    // Dimensões para o radar
+    const dims = [
+      { nome: 'Satisfação', qs: [1, 9, 16] },
+      { nome: 'Apoio/Liderança', qs: [2, 11, 12, 17] },
+      { nome: 'Estresse/Pressão', qs: [3, 10, 14, 19] },
+      { nome: 'Ambiente/Equilíbrio', qs: [4, 15] },
+      { nome: 'Relações/Conflito', qs: [5, 6, 13] },
+      { nome: 'Autonomia/Propósito', qs: [7, 18] },
+      { nome: 'Trabalho↔Casa', qs: [8] },
+      { nome: 'Suporte Psicológico', qs: [20] },
+    ];
+
+    const container = document.getElementById('questions');
+
+    function renderQuestions() {
+      container.innerHTML = '';
+      questions.forEach((q, idx) => {
+        const n = idx + 1;
+        const block = document.createElement('div');
+        block.className = 'rounded-xl border p-4';
+        block.innerHTML = `
+          <p class="font-medium mb-3">${n}. ${q.t}</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            ${q.a.map((alt, i) => {
+              const letter = ['A','B','C','D'][i];
+              const points = 3 - i; // A=3, B=2, C=1, D=0
+              return `
+                <label class="flex items-start gap-2 cursor-pointer border rounded-lg p-2 hover:bg-gray-50">
+                  <input type="radio" name="q${n}" value="${points}" class="mt-1" />
+                  <span><span class="font-semibold">(${letter})</span> ${alt}</span>
+                </label>`;
+            }).join('')}
+          </div>
+        `;
+        container.appendChild(block);
+      });
+    }
+
+    // Utils
+    function getValue(name) {
+      const el = document.querySelector(`input[name="${name}"]:checked`);
+      return el ? Number(el.value) : null;
+    }
+
+    function calcResultados() {
+      const valores = [];
+      for (let i = 1; i <= 20; i++) {
+        const v = getValue('q' + i);
+        if (v === null) return { erro: true, faltando: i };
+        valores.push(v);
+      }
+      const total = valores.reduce((a,b) => a+b, 0); // 0..60
+      const perc = Math.round((total / 60) * 100);
+
+      // Classificação
+      let cls = '—';
+      if (total >= 45) cls = '🟢 Baixo risco';
+      else if (total >= 30) cls = '🟡 Risco moderado';
+      else cls = '🔴 Alto risco';
+
+      // Dimensões (média por item -> 0..3)
+      const dimScores = dims.map(d => {
+        const sum = d.qs.reduce((acc, qi) => acc + valores[qi-1], 0);
+        const avg = sum / d.qs.length; // 0..3
+        return Math.round((avg + Number.EPSILON) * 100) / 100;
+      });
+
+      return { valores, total, perc, cls, dimScores };
+    }
+
+    function preencherTabela(valores) {
+      const tbody = document.getElementById('tbodyResumo');
+      tbody.innerHTML = '';
+      valores.forEach((v, i) => {
+        const tr = document.createElement('tr');
+        tr.className = i % 2 ? 'bg-white' : 'bg-gray-50';
+        const letra = ['D','C','B','A'][v]; // 0->D, 1->C, 2->B, 3->A
+        const cor = v >= 2 ? 'text-green-700' : (v === 1 ? 'text-yellow-700' : 'text-red-700');
+        tr.innerHTML = `
+          <td class="p-2">${i+1}</td>
+          <td class="p-2 ${cor}"><span class="font-medium">${letra}</span></td>
+          <td class="p-2">${v}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    let chartGeral, chartDim;
+
+    function desenharGraficos(total, perc, dimScores) {
+      const geralCtx = document.getElementById('chartGeral').getContext('2d');
+      const dimCtx = document.getElementById('chartDim').getContext('2d');
+
+      if (chartGeral) chartGeral.destroy();
+      if (chartDim) chartDim.destroy();
+
+      // Donut geral (percentual)
+      chartGeral = new Chart(geralCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Desempenho', 'Restante'],
+          datasets: [{ data: [perc, 100 - perc] }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: true }
+          },
+          cutout: '60%'
+        }
+      });
+
+      // Radar por dimensões (escala 0..3)
+      chartDim = new Chart(dimCtx, {
+        type: 'radar',
+        data: {
+          labels: dims.map(d => d.nome),
+          datasets: [{
+            label: 'Média (0–3)',
+            data: dimScores,
+            pointRadius: 3,
+            pointHoverRadius: 4,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { r: { suggestedMin: 0, suggestedMax: 3, ticks: { stepSize: 1 } } },
+          plugins: { legend: { display: false } }
+        }
+      });
+    }
+
+    // Handlers
+    document.getElementById('btnCalcular').addEventListener('click', () => {
+      const r = calcResultados();
+      if (r.erro) {
+        alert('Responda a questão ' + r.faltando + ' para continuar.');
+        return;
+      }
+      document.getElementById('resultadoCard').classList.remove('hidden');
+      document.getElementById('pontosTotais').textContent = r.total;
+      document.getElementById('percentual').textContent = r.perc;
+      document.getElementById('classificacao').textContent = r.cls;
+      preencherTabela(r.valores);
+      desenharGraficos(r.total, r.perc, r.dimScores);
+      // Preenche data automática se vazia
+      const dataEl = document.getElementById('data');
+      if (!dataEl.value) {
+        const today = new Date().toISOString().slice(0,10);
+        dataEl.value = today;
+      }
+    });
+
+    document.getElementById('btnLimpar').addEventListener('click', () => {
+      for (let i = 1; i <= 20; i++) {
+        document.querySelectorAll(`input[name="q${i}"]`).forEach(r => r.checked = false);
+      }
+      document.getElementById('resultadoCard').classList.add('hidden');
+      document.getElementById('pontosTotais').textContent = '0';
+      document.getElementById('percentual').textContent = '0';
+      document.getElementById('classificacao').textContent = '—';
+      const tbody = document.getElementById('tbodyResumo');
+      tbody.innerHTML = '';
+    });
+
+    // Auto-render
+    renderQuestions();
+  </script>
+</body>
+</html>
