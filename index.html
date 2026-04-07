@@ -332,5 +332,56 @@ WhatsApp 14 981359770 globalledconsultoria@gmail.com</h2>
     // Auto-render
     renderQuestions();
   </script>
-</body>
+<script>
+const canvas = document.getElementById('assinatura');
+const ctx = canvas.getContext('2d');
+
+let desenhando = false;
+
+function ajustarCanvas() {
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = rect.height;
+}
+
+ajustarCanvas();
+window.addEventListener('resize', ajustarCanvas);
+
+// Toque (celular)
+canvas.addEventListener('touchstart', (e) => {
+  desenhando = true;
+  ctx.beginPath();
+});
+
+canvas.addEventListener('touchend', () => desenhando = false);
+
+canvas.addEventListener('touchmove', (e) => {
+  if (!desenhando) return;
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const touch = e.touches[0];
+  ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  ctx.stroke();
+});
+
+// Mouse (PC)
+canvas.addEventListener('mousedown', () => {
+  desenhando = true;
+  ctx.beginPath();
+});
+
+canvas.addEventListener('mouseup', () => desenhando = false);
+
+canvas.addEventListener('mousemove', (e) => {
+  if (!desenhando) return;
+  const rect = canvas.getBoundingClientRect();
+  ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  ctx.stroke();
+});
+
+// Limpar
+function limparAssinatura() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+</script></body>
 </html>
