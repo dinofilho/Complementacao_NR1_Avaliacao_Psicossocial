@@ -340,46 +340,76 @@ let desenhando = false;
 
 function ajustarCanvas() {
   const rect = canvas.getBoundingClientRect();
+  const imagemAtual = canvas.toDataURL();
+
   canvas.width = rect.width;
   canvas.height = rect.height;
+
+  const img = new Image();
+  img.onload = function () {
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = imagemAtual;
 }
 
 ajustarCanvas();
 window.addEventListener('resize', ajustarCanvas);
 
-// Toque (celular)
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches) {
+    return {
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
+    };
+  }
+  return {
+    x: e.clientX - rect.left,
+    y: e.clientY - rect.top
+  };
+}
+
 canvas.addEventListener('touchstart', (e) => {
   desenhando = true;
+  const pos = getPos(e);
   ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
 });
-
-canvas.addEventListener('touchend', () => desenhando = false);
 
 canvas.addEventListener('touchmove', (e) => {
   if (!desenhando) return;
   e.preventDefault();
-  const rect = canvas.getBoundingClientRect();
-  const touch = e.touches[0];
-  ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+  const pos = getPos(e);
+  ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
 });
 
-// Mouse (PC)
-canvas.addEventListener('mousedown', () => {
-  desenhando = true;
-  ctx.beginPath();
+canvas.addEventListener('touchend', () => {
+  desenhando = false;
 });
 
-canvas.addEventListener('mouseup', () => desenhando = false);
+canvas.addEventListener('mousedown', (e) => {
+  desenhando = true;
+  const pos = getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(pos.x, pos.y);
+});
 
 canvas.addEventListener('mousemove', (e) => {
   if (!desenhando) return;
-  const rect = canvas.getBoundingClientRect();
-  ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+  const pos = getPos(e);
+  ctx.lineTo(pos.x, pos.y);
   ctx.stroke();
 });
 
-// Limpar
+canvas.addEventListener('mouseup', () => {
+  desenhando = false;
+});
+
+canvas.addEventListener('mouseleave', () => {
+  desenhando = false;
+});
+
 function limparAssinatura() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
