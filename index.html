@@ -7,8 +7,6 @@
 
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <!-- Biblioteca para gerar PDF -->
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
@@ -26,17 +24,18 @@
     }
 
     body {
-      background: #0b1220;
+      background: #08111f;
       color: #f3f4f6;
     }
 
     .card {
-      background: #1f1f23;
+      background: #101826;
+      border: 1px solid #223046;
     }
 
     input[type="text"],
     input[type="date"] {
-      background: #2a2a2f;
+      background: #1d2430;
       color: #fff;
       border: 1px solid #4b5563;
     }
@@ -47,11 +46,11 @@
 
     #assinatura {
       touch-action: none;
-      background: #fff;
-      border-radius: 10px;
+      background: #ffffff;
+      border-radius: 12px;
       width: 100%;
       height: 200px;
-      border: 1px solid #ccc;
+      border: 1px solid #d1d5db;
     }
 
     .pdf-area {
@@ -98,28 +97,31 @@
   </style>
 </head>
 <body>
-  <header class="bg-blue-900 text-white py-6 shadow">
-    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-      <h1 class="text-xl sm:text-2xl font-bold">GLOBALLED SST Complementação NR-1 • Psicossocial</h1>
-      <button
-        class="no-print bg-yellow-700 text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-600"
-        onclick="window.print()"
-      >
-        Salvar/Imprimir PDF
-      </button>
+  <header class="bg-green-800 text-white py-5 shadow">
+    <div class="max-w-5xl mx-auto px-4">
+      <div class="flex items-center gap-4">
+        <div style="width:72px;height:72px;border-radius:16px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
+          <img src="img/logo.png" alt="GLOBALLED SST" style="width:88%;height:auto;display:block;">
+        </div>
+
+        <div>
+          <h1 class="text-xl sm:text-2xl font-bold leading-tight">GLOBALLED SST</h1>
+          <p class="text-sm sm:text-base text-green-100">Complementação NR-1 • Psicossocial</p>
+        </div>
+      </div>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 py-6 space-y-8">
-    <!-- Identificação -->
     <section class="card p-5 rounded-2xl shadow">
-      <h2 class="text-lg font-semibold mb-4 leading-relaxed">
-        GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA<br>
-        CNPJ 39.315.500/0001-58<br>
-        WhatsApp 14 33224141<br>
-        WhatsApp 14 981359770<br>
-        globalledconsultoria@gmail.com
-      </h2>
+      <div class="mb-5">
+        <h2 class="text-lg font-semibold leading-relaxed">
+          GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA
+        </h2>
+        <p class="text-sm text-gray-300 mt-2">CNPJ 39.315.500/0001-58</p>
+        <p class="text-sm text-gray-300">WhatsApp 14 33224141 • WhatsApp 14 981359770</p>
+        <p class="text-sm text-gray-300">globalledconsultoria@gmail.com</p>
+      </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="block">
@@ -149,7 +151,6 @@
       </div>
     </section>
 
-    <!-- Questionário -->
     <section id="quiz" class="card p-5 rounded-2xl shadow">
       <h2 class="text-lg font-semibold mb-4">Questionário (20 questões)</h2>
       <div id="questions" class="space-y-6"></div>
@@ -158,14 +159,9 @@
         <button id="btnCalcular" class="no-print bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800">
           Calcular resultado
         </button>
-
-        <button id="btnLimpar" class="no-print bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600">
-          Limpar respostas
-        </button>
       </div>
     </section>
 
-    <!-- Resultado -->
     <section id="resultadoCard" class="card p-5 rounded-2xl shadow hidden">
       <h2 class="text-lg font-semibold mb-2">Resultado</h2>
 
@@ -234,25 +230,9 @@
       </div>
 
       <div class="mt-6 no-print">
-        <p class="text-sm text-gray-300 mb-3">
-          Para enviar o documento completo com gráfico e assinatura, use os botões abaixo.
-        </p>
-
         <div class="flex flex-wrap gap-3">
           <button id="btnGerarPdf" type="button" class="bg-indigo-700 text-white px-5 py-2 rounded-lg hover:bg-indigo-800">
             Gerar PDF
-          </button>
-
-          <button id="btnCompartilharPdf" type="button" class="bg-purple-700 text-white px-5 py-2 rounded-lg hover:bg-purple-800">
-            Compartilhar PDF
-          </button>
-
-          <button id="btnWhatsApp" type="button" class="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800">
-            Enviar resumo no WhatsApp
-          </button>
-
-          <button id="btnEmail" type="button" class="bg-red-700 text-white px-5 py-2 rounded-lg hover:bg-red-800">
-            Enviar resumo por E-mail
           </button>
         </div>
       </div>
@@ -266,7 +246,6 @@
     </section>
   </main>
 
-  <!-- Área invisível usada para montar o PDF -->
   <div id="pdfContainer" class="fixed -left-full top-0 w-[794px] p-6 pdf-area"></div>
 
   <script>
@@ -307,8 +286,6 @@
     const container = document.getElementById('questions');
     let chartGeral = null;
     let chartDim = null;
-    let ultimoPdfBlob = null;
-    let ultimoPdfNome = null;
 
     function renderQuestions() {
       container.innerHTML = '';
@@ -393,6 +370,14 @@
       });
     }
 
+    function atualizarDataSeVazia() {
+      const dataEl = document.getElementById('data');
+      if (!dataEl.value) {
+        const today = new Date().toISOString().slice(0, 10);
+        dataEl.value = today;
+      }
+    }
+
     function desenharGraficos(total, perc, dimScores) {
       const geralCtx = document.getElementById('chartGeral').getContext('2d');
       const dimCtx = document.getElementById('chartDim').getContext('2d');
@@ -410,9 +395,7 @@
         },
         options: {
           responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
+          plugins: { legend: { display: false } },
           cutout: '60%'
         }
       });
@@ -438,57 +421,9 @@
               ticks: { stepSize: 1 }
             }
           },
-          plugins: {
-            legend: { display: false }
-          }
+          plugins: { legend: { display: false } }
         }
       });
-    }
-
-    function obterTextoResposta(valor) {
-      return ['D', 'C', 'B', 'A'][valor] || '-';
-    }
-
-    function montarMensagemFormulario() {
-      const nome = document.getElementById('nome').value || '';
-      const cpf = document.getElementById('cpf').value || '';
-      const cargo = document.getElementById('cargo').value || '';
-      const empresa = document.getElementById('empresa').value || '';
-      const data = document.getElementById('data').value || '';
-
-      const r = calcResultados();
-
-      let mensagem = '';
-      mensagem += 'QUESTIONÁRIO NR-1 - PSICOSSOCIAL\n\n';
-      mensagem += 'Nome: ' + nome + '\n';
-      mensagem += 'CPF: ' + cpf + '\n';
-      mensagem += 'Cargo/Função: ' + cargo + '\n';
-      mensagem += 'Empresa/CNPJ: ' + empresa + '\n';
-      mensagem += 'Data: ' + data + '\n\n';
-
-      if (!r.erro) {
-        mensagem += 'Pontuação total: ' + r.total + ' / 60\n';
-        mensagem += 'Percentual: ' + r.perc + '%\n';
-        mensagem += 'Classificação: ' + r.cls + '\n\n';
-      }
-
-      mensagem += 'Respostas:\n';
-
-      for (let i = 1; i <= 20; i++) {
-        const v = getValue('q' + i);
-        const resposta = v === null ? 'Não respondida' : obterTextoResposta(v);
-        mensagem += i + '. ' + resposta + '\n';
-      }
-
-      return mensagem;
-    }
-
-    function atualizarDataSeVazia() {
-      const dataEl = document.getElementById('data');
-      if (!dataEl.value) {
-        const today = new Date().toISOString().slice(0, 10);
-        dataEl.value = today;
-      }
     }
 
     function garantirResultadoCalculado() {
@@ -508,6 +443,10 @@
       desenharGraficos(r.total, r.perc, r.dimScores);
 
       return r;
+    }
+
+    function obterTextoResposta(valor) {
+      return ['D', 'C', 'B', 'A'][valor] || '-';
     }
 
     function gerarMapaRespostasHtml(valores) {
@@ -542,9 +481,20 @@
       pdfContainer.innerHTML = `
         <div style="font-family: Arial, sans-serif;">
           <div class="card-pdf">
-            <h1 style="font-size:20px; font-weight:bold; margin-bottom:12px;">
-              GLOBALLED SST Complementação NR-1 – Psicossocial
-            </h1>
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
+              <div style="width:70px; height:70px; border-radius:14px; background:#111; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                <img src="img/logo.png" alt="GLOBALLED SST" style="width:88%; height:auto; display:block;">
+              </div>
+              <div>
+                <h1 style="font-size:20px; font-weight:bold; margin:0;">
+                  GLOBALLED SST
+                </h1>
+                <p style="margin:4px 0 0 0; font-size:14px;">
+                  Complementação NR-1 – Psicossocial
+                </p>
+              </div>
+            </div>
+
             <p style="margin:0 0 4px 0;"><strong>Empresa:</strong> GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA</p>
             <p style="margin:0 0 4px 0;"><strong>CNPJ:</strong> 39.315.500/0001-58</p>
             <p style="margin:0 0 4px 0;"><strong>WhatsApp:</strong> 14 33224141 / 14 981359770</p>
@@ -637,7 +587,6 @@
 
       const pdfWidth = 210;
       const pdfHeight = 297;
-
       const imgWidth = pdfWidth;
       const imgHeight = (canvasPdf.height * imgWidth) / canvasPdf.width;
 
@@ -656,9 +605,6 @@
 
       const nomeArquivo = 'questionario-nr1-psicossocial.pdf';
       const blob = pdf.output('blob');
-
-      ultimoPdfBlob = blob;
-      ultimoPdfNome = nomeArquivo;
 
       return { blob, nomeArquivo };
     }
@@ -680,81 +626,12 @@
       }, 3000);
     }
 
-    async function compartilharPdf() {
-      const resultado = await montarPdfBlob();
-      if (!resultado) return;
-
-      const file = new File([resultado.blob], resultado.nomeArquivo, { type: 'application/pdf' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
-        try {
-          await navigator.share({
-            title: 'Questionário NR-1 Psicossocial',
-            text: 'Segue o PDF do questionário.',
-            files: [file]
-          });
-        } catch (e) {
-          alert('O compartilhamento foi cancelado ou não pôde ser concluído.');
-        }
-      } else {
-        alert('Seu navegador não permite compartilhar o PDF direto. O arquivo será baixado no celular.');
-        await baixarPdf();
-      }
-    }
-
     document.getElementById('btnCalcular').addEventListener('click', function() {
       garantirResultadoCalculado();
     });
 
-    document.getElementById('btnLimpar').addEventListener('click', function() {
-      for (let i = 1; i <= 20; i++) {
-        const radios = document.querySelectorAll('input[name="q' + i + '"]');
-        radios.forEach(function(radio) {
-          radio.checked = false;
-        });
-      }
-
-      document.getElementById('resultadoCard').classList.add('hidden');
-      document.getElementById('pontosTotais').textContent = '0';
-      document.getElementById('percentual').textContent = '0';
-      document.getElementById('classificacao').textContent = '—';
-      document.getElementById('tbodyResumo').innerHTML = '';
-
-      if (chartGeral) {
-        chartGeral.destroy();
-        chartGeral = null;
-      }
-
-      if (chartDim) {
-        chartDim.destroy();
-        chartDim = null;
-      }
-    });
-
     document.getElementById('btnGerarPdf').addEventListener('click', async function() {
       await baixarPdf();
-    });
-
-    document.getElementById('btnCompartilharPdf').addEventListener('click', async function() {
-      await compartilharPdf();
-    });
-
-    document.getElementById('btnWhatsApp').addEventListener('click', function() {
-      const r = garantirResultadoCalculado();
-      if (!r) return;
-      const mensagem = montarMensagemFormulario();
-      const numero = '551433224141';
-      const url = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
-      window.open(url, '_blank');
-    });
-
-    document.getElementById('btnEmail').addEventListener('click', function() {
-      const r = garantirResultadoCalculado();
-      if (!r) return;
-      const mensagem = montarMensagemFormulario();
-      const assunto = encodeURIComponent('Questionário NR-1 Psicossocial');
-      const corpo = encodeURIComponent(mensagem);
-      window.location.href = 'mailto:saude7@gmail.com?subject=' + assunto + '&body=' + corpo;
     });
 
     renderQuestions();
