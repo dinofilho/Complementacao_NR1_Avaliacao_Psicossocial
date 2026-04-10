@@ -4,14 +4,25 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>GLOBALLED SST Complementação NR-1 – Psicossocial</title>
+
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Biblioteca para gerar PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
   <style>
     @media print {
       .no-print { display: none !important; }
-      .print-block { display: block !important; }
-      body { background: #fff !important; color: #000 !important; }
-      .card { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #e5e7eb !important;
+      }
     }
 
     body {
@@ -41,6 +52,48 @@
       width: 100%;
       height: 200px;
       border: 1px solid #ccc;
+    }
+
+    .pdf-area {
+      background: #ffffff;
+      color: #111827;
+    }
+
+    .pdf-area .card-pdf {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 16px;
+      padding: 18px;
+      margin-bottom: 18px;
+    }
+
+    .pdf-area table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .pdf-area th,
+    .pdf-area td {
+      border: 1px solid #d1d5db;
+      padding: 8px;
+      font-size: 12px;
+    }
+
+    .pdf-area th {
+      background: #f3f4f6;
+    }
+
+    .pdf-area .assinatura-box {
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 120px;
+    }
+
+    .pdf-area .linha-ass {
+      height: 60px;
+      border-bottom: 1px solid #6b7280;
+      margin-bottom: 6px;
     }
   </style>
 </head>
@@ -109,19 +162,11 @@
         <button id="btnLimpar" class="no-print bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600">
           Limpar respostas
         </button>
-
-        <button id="btnWhatsApp" type="button" class="no-print bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800">
-          Enviar no WhatsApp
-        </button>
-
-        <button id="btnEmail" type="button" class="no-print bg-red-700 text-white px-5 py-2 rounded-lg hover:bg-red-800">
-          Enviar por E-mail
-        </button>
       </div>
     </section>
 
     <!-- Resultado -->
-    <section id="resultadoCard" class="card p-5 rounded-2xl shadow hidden print-block">
+    <section id="resultadoCard" class="card p-5 rounded-2xl shadow hidden">
       <h2 class="text-lg font-semibold mb-2">Resultado</h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -187,6 +232,30 @@
           </div>
         </div>
       </div>
+
+      <div class="mt-6 no-print">
+        <p class="text-sm text-gray-300 mb-3">
+          Para enviar o documento completo com gráfico e assinatura, use os botões abaixo.
+        </p>
+
+        <div class="flex flex-wrap gap-3">
+          <button id="btnGerarPdf" type="button" class="bg-indigo-700 text-white px-5 py-2 rounded-lg hover:bg-indigo-800">
+            Gerar PDF
+          </button>
+
+          <button id="btnCompartilharPdf" type="button" class="bg-purple-700 text-white px-5 py-2 rounded-lg hover:bg-purple-800">
+            Compartilhar PDF
+          </button>
+
+          <button id="btnWhatsApp" type="button" class="bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800">
+            Enviar resumo no WhatsApp
+          </button>
+
+          <button id="btnEmail" type="button" class="bg-red-700 text-white px-5 py-2 rounded-lg hover:bg-red-800">
+            Enviar resumo por E-mail
+          </button>
+        </div>
+      </div>
     </section>
 
     <section class="text-xs text-gray-400">
@@ -196,6 +265,9 @@
       </p>
     </section>
   </main>
+
+  <!-- Área invisível usada para montar o PDF -->
+  <div id="pdfContainer" class="fixed -left-full top-0 w-[794px] p-6 pdf-area"></div>
 
   <script>
     const questions = [
@@ -235,6 +307,8 @@
     const container = document.getElementById('questions');
     let chartGeral = null;
     let chartDim = null;
+    let ultimoPdfBlob = null;
+    let ultimoPdfNome = null;
 
     function renderQuestions() {
       container.innerHTML = '';
@@ -315,7 +389,6 @@
           <td class="p-2 ${cor}"><span class="font-medium">${letra}</span></td>
           <td class="p-2">${v}</td>
         `;
-
         tbody.appendChild(tr);
       });
     }
@@ -410,27 +483,227 @@
       return mensagem;
     }
 
-    document.getElementById('btnCalcular').addEventListener('click', function() {
-      const r = calcResultados();
-
-      if (r.erro) {
-        alert('Responda a questão ' + r.faltando + ' para continuar.');
-        return;
-      }
-
-      document.getElementById('resultadoCard').classList.remove('hidden');
-      document.getElementById('pontosTotais').textContent = r.total;
-      document.getElementById('percentual').textContent = r.perc;
-      document.getElementById('classificacao').textContent = r.cls;
-
-      preencherTabela(r.valores);
-      desenharGraficos(r.total, r.perc, r.dimScores);
-
+    function atualizarDataSeVazia() {
       const dataEl = document.getElementById('data');
       if (!dataEl.value) {
         const today = new Date().toISOString().slice(0, 10);
         dataEl.value = today;
       }
+    }
+
+    function garantirResultadoCalculado() {
+      const r = calcResultados();
+
+      if (r.erro) {
+        alert('Responda a questão ' + r.faltando + ' para continuar.');
+        return null;
+      }
+
+      atualizarDataSeVazia();
+      document.getElementById('resultadoCard').classList.remove('hidden');
+      document.getElementById('pontosTotais').textContent = r.total;
+      document.getElementById('percentual').textContent = r.perc;
+      document.getElementById('classificacao').textContent = r.cls;
+      preencherTabela(r.valores);
+      desenharGraficos(r.total, r.perc, r.dimScores);
+
+      return r;
+    }
+
+    function gerarMapaRespostasHtml(valores) {
+      let linhas = '';
+      valores.forEach(function(v, i) {
+        linhas += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${obterTextoResposta(v)}</td>
+            <td>${v}</td>
+          </tr>
+        `;
+      });
+      return linhas;
+    }
+
+    async function montarPdfBlob() {
+      const r = garantirResultadoCalculado();
+      if (!r) return null;
+
+      const nome = document.getElementById('nome').value || '';
+      const cpf = document.getElementById('cpf').value || '';
+      const cargo = document.getElementById('cargo').value || '';
+      const empresa = document.getElementById('empresa').value || '';
+      const data = document.getElementById('data').value || '';
+
+      const chartGeralImg = document.getElementById('chartGeral').toDataURL('image/png', 1.0);
+      const chartDimImg = document.getElementById('chartDim').toDataURL('image/png', 1.0);
+      const assinaturaImg = document.getElementById('assinatura').toDataURL('image/png', 1.0);
+
+      const pdfContainer = document.getElementById('pdfContainer');
+      pdfContainer.innerHTML = `
+        <div style="font-family: Arial, sans-serif;">
+          <div class="card-pdf">
+            <h1 style="font-size:20px; font-weight:bold; margin-bottom:12px;">
+              GLOBALLED SST Complementação NR-1 – Psicossocial
+            </h1>
+            <p style="margin:0 0 4px 0;"><strong>Empresa:</strong> GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA</p>
+            <p style="margin:0 0 4px 0;"><strong>CNPJ:</strong> 39.315.500/0001-58</p>
+            <p style="margin:0 0 4px 0;"><strong>WhatsApp:</strong> 14 33224141 / 14 981359770</p>
+            <p style="margin:0;"><strong>E-mail:</strong> globalledconsultoria@gmail.com</p>
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Identificação</h2>
+            <p><strong>Nome:</strong> ${nome}</p>
+            <p><strong>CPF:</strong> ${cpf}</p>
+            <p><strong>Cargo/Função:</strong> ${cargo}</p>
+            <p><strong>Empresa/CNPJ:</strong> ${empresa}</p>
+            <p><strong>Data:</strong> ${data}</p>
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Resultado</h2>
+            <p><strong>Pontuação total:</strong> ${r.total} / 60</p>
+            <p><strong>Percentual:</strong> ${r.perc}%</p>
+            <p><strong>Classificação:</strong> ${r.cls}</p>
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Indicador Geral</h2>
+            <img src="${chartGeralImg}" style="max-width:320px; width:100%; display:block; margin:auto;" />
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Dimensões</h2>
+            <img src="${chartDimImg}" style="max-width:500px; width:100%; display:block; margin:auto;" />
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Mapa de Respostas</h2>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Resposta</th>
+                  <th>Pontos</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${gerarMapaRespostasHtml(r.valores)}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Interpretação</h2>
+            <ul style="padding-left:20px; margin:0;">
+              <li><strong>45–60 (Baixo risco):</strong> equilíbrio emocional e ambiente saudável.</li>
+              <li><strong>30–44 (Risco moderado):</strong> sinais de desgaste ou estresse pontual.</li>
+              <li><strong>0–29 (Alto risco):</strong> probabilidade de sobrecarga emocional e estresse crônico.</li>
+            </ul>
+          </div>
+
+          <div class="card-pdf">
+            <h2 style="font-size:16px; font-weight:bold; margin-bottom:12px;">Assinaturas</h2>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+              <div class="assinatura-box">
+                <img src="${assinaturaImg}" style="width:100%; max-height:150px; object-fit:contain;" />
+                <p style="margin-top:8px; font-size:12px;">Assinatura do Colaborador</p>
+              </div>
+              <div class="assinatura-box">
+                <div class="linha-ass"></div>
+                <p style="font-size:12px;">Carimbo e Assinatura do Responsável técnico</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card-pdf">
+            <p style="font-size:12px; margin:0;">
+              Este instrumento é complementar ao gerenciamento de riscos ocupacionais (GRO) e à NR-1.
+              Só é válido com carimbo e assinatura do profissional devidamente habilitado.
+            </p>
+          </div>
+        </div>
+      `;
+
+      const canvasPdf = await html2canvas(pdfContainer, {
+        scale: 2,
+        backgroundColor: '#ffffff',
+        useCORS: true
+      });
+
+      const imgData = canvasPdf.toDataURL('image/png');
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF('p', 'mm', 'a4');
+
+      const pdfWidth = 210;
+      const pdfHeight = 297;
+
+      const imgWidth = pdfWidth;
+      const imgHeight = (canvasPdf.height * imgWidth) / canvasPdf.width;
+
+      let heightLeft = imgHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pdfHeight;
+      }
+
+      const nomeArquivo = 'questionario-nr1-psicossocial.pdf';
+      const blob = pdf.output('blob');
+
+      ultimoPdfBlob = blob;
+      ultimoPdfNome = nomeArquivo;
+
+      return { blob, nomeArquivo };
+    }
+
+    async function baixarPdf() {
+      const resultado = await montarPdfBlob();
+      if (!resultado) return;
+
+      const url = URL.createObjectURL(resultado.blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resultado.nomeArquivo;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      setTimeout(function() {
+        URL.revokeObjectURL(url);
+      }, 3000);
+    }
+
+    async function compartilharPdf() {
+      const resultado = await montarPdfBlob();
+      if (!resultado) return;
+
+      const file = new File([resultado.blob], resultado.nomeArquivo, { type: 'application/pdf' });
+
+      if (navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Questionário NR-1 Psicossocial',
+            text: 'Segue o PDF do questionário.',
+            files: [file]
+          });
+        } catch (e) {
+          alert('O compartilhamento foi cancelado ou não pôde ser concluído.');
+        }
+      } else {
+        alert('Seu navegador não permite compartilhar o PDF direto. O arquivo será baixado no celular.');
+        await baixarPdf();
+      }
+    }
+
+    document.getElementById('btnCalcular').addEventListener('click', function() {
+      garantirResultadoCalculado();
     });
 
     document.getElementById('btnLimpar').addEventListener('click', function() {
@@ -458,7 +731,17 @@
       }
     });
 
+    document.getElementById('btnGerarPdf').addEventListener('click', async function() {
+      await baixarPdf();
+    });
+
+    document.getElementById('btnCompartilharPdf').addEventListener('click', async function() {
+      await compartilharPdf();
+    });
+
     document.getElementById('btnWhatsApp').addEventListener('click', function() {
+      const r = garantirResultadoCalculado();
+      if (!r) return;
       const mensagem = montarMensagemFormulario();
       const numero = '551433224141';
       const url = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
@@ -466,6 +749,8 @@
     });
 
     document.getElementById('btnEmail').addEventListener('click', function() {
+      const r = garantirResultadoCalculado();
+      if (!r) return;
       const mensagem = montarMensagemFormulario();
       const assunto = encodeURIComponent('Questionário NR-1 Psicossocial');
       const corpo = encodeURIComponent(mensagem);
@@ -480,13 +765,27 @@
     const ctx = canvas.getContext('2d');
     let desenhando = false;
 
-    function ajustarCanvas() {
+    function ajustarCanvas(preservar = true) {
       const rect = canvas.getBoundingClientRect();
+      let imagemAtual = null;
+
+      if (preservar && canvas.width > 0 && canvas.height > 0) {
+        imagemAtual = document.createElement('canvas');
+        imagemAtual.width = canvas.width;
+        imagemAtual.height = canvas.height;
+        imagemAtual.getContext('2d').drawImage(canvas, 0, 0);
+      }
+
       canvas.width = rect.width;
       canvas.height = rect.height;
+
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#111827';
+
+      if (imagemAtual) {
+        ctx.drawImage(imagemAtual, 0, 0, canvas.width, canvas.height);
+      }
     }
 
     function getPos(e) {
@@ -528,8 +827,15 @@
       ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-    ajustarCanvas();
-    window.addEventListener('resize', ajustarCanvas);
+    ajustarCanvas(false);
+
+    window.addEventListener('resize', function() {
+      ajustarCanvas(true);
+    });
+
+    window.addEventListener('beforeprint', function() {
+      ajustarCanvas(true);
+    });
 
     canvas.addEventListener('touchstart', iniciarDesenho, { passive: false });
     canvas.addEventListener('touchmove', desenhar, { passive: false });
