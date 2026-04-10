@@ -9,119 +9,145 @@
   <style>
     @media print {
       .no-print { display: none !important; }
-      .print\:block { display: block !important; }
-      body { background: #fff; }
-      .card { box-shadow: none !important; border: 1px solid #e5e7eb; }
+      .print-block { display: block !important; }
+      body { background: #fff !important; color: #000 !important; }
+      .card { box-shadow: none !important; border: 1px solid #e5e7eb !important; }
+    }
+
+    body {
+      background: #0b1220;
+      color: #f3f4f6;
+    }
+
+    .card {
+      background: #1f1f23;
+    }
+
+    input[type="text"],
+    input[type="date"] {
+      background: #2a2a2f;
+      color: #fff;
+      border: 1px solid #4b5563;
+    }
+
+    input[type="text"]::placeholder {
+      color: #9ca3af;
     }
 
     #assinatura {
       touch-action: none;
       background: #fff;
       border-radius: 10px;
+      width: 100%;
+      height: 200px;
+      border: 1px solid #ccc;
     }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
+<body>
   <header class="bg-blue-900 text-white py-6 shadow">
     <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
       <h1 class="text-xl sm:text-2xl font-bold">GLOBALLED SST Complementação NR-1 • Psicossocial</h1>
-      <button class="no-print bg-yellow-400 text-blue-900 font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-300" onclick="window.print()">Salvar/Imprimir PDF</button>
+      <button
+        class="no-print bg-yellow-700 text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-yellow-600"
+        onclick="window.print()"
+      >
+        Salvar/Imprimir PDF
+      </button>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-4 py-6 space-y-8">
     <!-- Identificação -->
-    <section class="card bg-white p-5 rounded-2xl shadow">
-      <h2 class="text-lg font-semibold mb-4">
-        GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA
-        <br>CNPJ 39.315.500/0001-58
-        <br>WhatsApp 14 33224141
-        <br>WhatsApp 14 981359770
-        <br>globalledconsultoria@gmail.com
+    <section class="card p-5 rounded-2xl shadow">
+      <h2 class="text-lg font-semibold mb-4 leading-relaxed">
+        GLOBALLED ENGENHARIA, CONSULTORIA, GESTAO EM SAUDE E SEGURANCA NO TRABALHO LTDA<br>
+        CNPJ 39.315.500/0001-58<br>
+        WhatsApp 14 33224141<br>
+        WhatsApp 14 981359770<br>
+        globalledconsultoria@gmail.com
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <label class="block">
-          <span class="text-sm text-gray-600">Nome completo</span>
-          <input id="nome" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+          <span class="text-sm text-gray-300">Nome completo</span>
+          <input id="nome" type="text" class="mt-1 w-full rounded-lg p-3 focus:outline-none" />
         </label>
 
         <label class="block">
-          <span class="text-sm text-gray-600">CPF</span>
-          <input id="cpf" type="text" placeholder="000.000.000-00" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+          <span class="text-sm text-gray-300">CPF</span>
+          <input id="cpf" type="text" placeholder="000.000.000-00" class="mt-1 w-full rounded-lg p-3 focus:outline-none" />
         </label>
 
         <label class="block">
-          <span class="text-sm text-gray-600">Cargo/Função</span>
-          <input id="cargo" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+          <span class="text-sm text-gray-300">Cargo/Função</span>
+          <input id="cargo" type="text" class="mt-1 w-full rounded-lg p-3 focus:outline-none" />
         </label>
 
         <label class="block">
-          <span class="text-sm text-gray-600">Empresa/CNPJ</span>
-          <input id="empresa" type="text" class="mt-1 w-full border rounded-lg p-2 focus:ring focus:outline-none" />
+          <span class="text-sm text-gray-300">Empresa/CNPJ</span>
+          <input id="empresa" type="text" class="mt-1 w-full rounded-lg p-3 focus:outline-none" />
         </label>
 
         <label class="block md:col-span-2">
-          <span class="text-sm text-gray-600">Data</span>
-          <input id="data" type="date" class="mt-1 w-full md:w-64 border rounded-lg p-2 focus:ring focus:outline-none" />
+          <span class="text-sm text-gray-300">Data</span>
+          <input id="data" type="date" class="mt-1 w-full md:w-64 rounded-lg p-3 focus:outline-none" />
         </label>
       </div>
     </section>
 
     <!-- Questionário -->
-    <section id="quiz" class="card bg-white p-5 rounded-2xl shadow">
+    <section id="quiz" class="card p-5 rounded-2xl shadow">
       <h2 class="text-lg font-semibold mb-4">Questionário (20 questões)</h2>
-      <div class="space-y-5">
-        <div id="questions" class="space-y-6"></div>
-      </div>
+      <div id="questions" class="space-y-6"></div>
 
       <div class="mt-6 flex flex-wrap items-center gap-3">
         <button id="btnCalcular" class="no-print bg-blue-700 text-white px-5 py-2 rounded-lg hover:bg-blue-800">
           Calcular resultado
         </button>
 
-        <button id="btnLimpar" class="no-print bg-gray-200 text-gray-800 px-5 py-2 rounded-lg hover:bg-gray-300">
+        <button id="btnLimpar" class="no-print bg-gray-500 text-white px-5 py-2 rounded-lg hover:bg-gray-600">
           Limpar respostas
         </button>
 
-        <button id="btnWhatsApp" type="button" class="no-print bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700">
+        <button id="btnWhatsApp" type="button" class="no-print bg-green-700 text-white px-5 py-2 rounded-lg hover:bg-green-800">
           Enviar no WhatsApp
         </button>
 
-        <button id="btnEmail" type="button" class="no-print bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700">
+        <button id="btnEmail" type="button" class="no-print bg-red-700 text-white px-5 py-2 rounded-lg hover:bg-red-800">
           Enviar por E-mail
         </button>
       </div>
     </section>
 
-    <!-- Resultado / Gráficos -->
-    <section id="resultadoCard" class="card bg-white p-5 rounded-2xl shadow hidden print:block">
+    <!-- Resultado -->
+    <section id="resultadoCard" class="card p-5 rounded-2xl shadow hidden print-block">
       <h2 class="text-lg font-semibold mb-2">Resultado</h2>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div class="p-3 border rounded-xl">
+        <div class="p-3 border border-gray-600 rounded-xl">
           <h3 class="font-medium mb-2">Resumo</h3>
           <p class="text-sm">Pontuação total: <strong><span id="pontosTotais">0</span> / 60</strong></p>
           <p class="text-sm">Percentual: <strong><span id="percentual">0</span>%</strong></p>
           <p class="text-sm">Classificação: <strong><span id="classificacao">—</span></strong></p>
         </div>
 
-        <div class="p-3 border rounded-xl">
-          <h3 class="font-medium mb-2">Indicador Geral</h3>
+        <div class="p-3 border border-gray-600 rounded-xl bg-white">
+          <h3 class="font-medium mb-2 text-black">Indicador Geral</h3>
           <canvas id="chartGeral" height="200"></canvas>
         </div>
 
-        <div class="p-3 border rounded-xl lg:col-span-1">
-          <h3 class="font-medium mb-2">Dimensões</h3>
+        <div class="p-3 border border-gray-600 rounded-xl bg-white">
+          <h3 class="font-medium mb-2 text-black">Dimensões</h3>
           <canvas id="chartDim" height="200"></canvas>
         </div>
       </div>
 
       <div class="mt-6">
         <h3 class="font-medium mb-2">Mapa de Respostas</h3>
-        <div class="overflow-auto border rounded-xl">
+        <div class="overflow-auto border border-gray-600 rounded-xl">
           <table class="min-w-full text-sm">
-            <thead class="bg-gray-100">
+            <thead class="bg-gray-700 text-white">
               <tr>
                 <th class="p-2 text-left">#</th>
                 <th class="p-2 text-left">Resposta</th>
@@ -134,7 +160,7 @@
       </div>
 
       <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="border rounded-xl p-4">
+        <div class="border border-gray-600 rounded-xl p-4">
           <h3 class="font-medium mb-2">Interpretação</h3>
           <ul class="list-disc pl-6 text-sm space-y-1">
             <li><span class="font-semibold">45–60 (Baixo risco):</span> equilíbrio emocional e ambiente saudável.</li>
@@ -143,27 +169,27 @@
           </ul>
         </div>
 
-        <div class="border rounded-xl p-4">
+        <div class="border border-gray-600 rounded-xl p-4">
           <h3 class="font-medium mb-2">Assinaturas</h3>
           <div class="grid grid-cols-1 gap-6 mt-2">
             <div>
-              <canvas id="assinatura" style="border:1px solid #ccc; width:100%; height:200px;"></canvas>
-              <p class="text-xs mt-1 text-gray-600">Assinatura do Colaborador</p>
-              <button type="button" onclick="limparAssinatura()" class="no-print mt-2 bg-gray-200 px-3 py-1 rounded">
+              <canvas id="assinatura"></canvas>
+              <p class="text-xs mt-1 text-gray-300">Assinatura do Colaborador</p>
+              <button type="button" onclick="limparAssinatura()" class="no-print mt-2 bg-gray-300 text-black px-3 py-1 rounded">
                 Limpar
               </button>
             </div>
 
             <div>
-              <div class="h-12 border-b"></div>
-              <p class="text-xs mt-1 text-gray-600">Carimbo e Assinatura do Responsável técnico</p>
+              <div class="h-12 border-b border-gray-400"></div>
+              <p class="text-xs mt-1 text-gray-300">Carimbo e Assinatura do Responsável técnico</p>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="text-xs text-gray-500">
+    <section class="text-xs text-gray-400">
       <p>
         Este instrumento é complementar ao gerenciamento de riscos ocupacionais (GRO) e à NR-1.
         Só é válido com carimbo e assinatura do profissional devidamente habilitado.
@@ -192,7 +218,7 @@
       { t: 'Você sente liberdade para expressar opiniões na empresa?', a: ['Sempre', 'Às vezes', 'Raramente', 'Nunca'] },
       { t: 'Você sente que sua função contribui para algo maior na empresa?', a: ['Sim, com certeza', 'Parcialmente', 'Pouco', 'Não vejo propósito'] },
       { t: 'Você percebe sinais de ansiedade, irritação ou fadiga constantes?', a: ['Nunca', 'Às vezes', 'Frequentemente', 'Sempre'] },
-      { t: 'Você acredita que teria apoio psicológico se precisasse?', a: ['Sim, imediato', 'Provável', 'Pouco provável', 'Não'] },
+      { t: 'Você acredita que teria apoio psicológico se precisasse?', a: ['Sim, imediato', 'Provável', 'Pouco provável', 'Não'] }
     ];
 
     const dims = [
@@ -202,50 +228,59 @@
       { nome: 'Ambiente/Equilíbrio', qs: [4, 15] },
       { nome: 'Relações/Conflito', qs: [5, 6, 13] },
       { nome: 'Autonomia/Propósito', qs: [7, 18] },
-      { nome: 'Trabalho↔Casa', qs: [8] },
-      { nome: 'Suporte Psicológico', qs: [20] },
+      { nome: 'Trabalho-Casa', qs: [8] },
+      { nome: 'Suporte Psicológico', qs: [20] }
     ];
 
     const container = document.getElementById('questions');
+    let chartGeral = null;
+    let chartDim = null;
 
     function renderQuestions() {
       container.innerHTML = '';
-      questions.forEach((q, idx) => {
+
+      questions.forEach(function(q, idx) {
         const n = idx + 1;
-        const block = document.createElement('div');
-        block.className = 'rounded-xl border p-4';
-        block.innerHTML = `
+        const alternativas = q.a.map(function(alt, i) {
+          const letter = ['A', 'B', 'C', 'D'][i];
+          const points = 3 - i;
+          return `
+            <label class="flex items-start gap-2 cursor-pointer border border-gray-600 rounded-lg p-3 hover:bg-gray-800">
+              <input type="radio" name="q${n}" value="${points}" class="mt-1" />
+              <span><span class="font-semibold">(${letter})</span> ${alt}</span>
+            </label>
+          `;
+        }).join('');
+
+        const bloco = document.createElement('div');
+        bloco.className = 'rounded-xl border border-gray-600 p-4';
+        bloco.innerHTML = `
           <p class="font-medium mb-3">${n}. ${q.t}</p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-            ${q.a.map((alt, i) => {
-              const letter = ['A','B','C','D'][i];
-              const points = 3 - i;
-              return `
-                <label class="flex items-start gap-2 cursor-pointer border rounded-lg p-2 hover:bg-gray-50">
-                  <input type="radio" name="q${n}" value="${points}" class="mt-1" />
-                  <span><span class="font-semibold">(${letter})</span> ${alt}</span>
-                </label>`;
-            }).join('')}
+            ${alternativas}
           </div>
         `;
-        container.appendChild(block);
+        container.appendChild(bloco);
       });
     }
 
     function getValue(name) {
-      const el = document.querySelector(\`input[name="\${name}"]:checked\`);
+      const el = document.querySelector('input[name="' + name + '"]:checked');
       return el ? Number(el.value) : null;
     }
 
     function calcResultados() {
       const valores = [];
+
       for (let i = 1; i <= 20; i++) {
         const v = getValue('q' + i);
-        if (v === null) return { erro: true, faltando: i };
+        if (v === null) {
+          return { erro: true, faltando: i };
+        }
         valores.push(v);
       }
 
-      const total = valores.reduce((a,b) => a + b, 0);
+      const total = valores.reduce(function(a, b) { return a + b; }, 0);
       const perc = Math.round((total / 60) * 100);
 
       let cls = '—';
@@ -253,10 +288,12 @@
       else if (total >= 30) cls = '🟡 Risco moderado';
       else cls = '🔴 Alto risco';
 
-      const dimScores = dims.map(d => {
-        const sum = d.qs.reduce((acc, qi) => acc + valores[qi - 1], 0);
-        const avg = sum / d.qs.length;
-        return Math.round((avg + Number.EPSILON) * 100) / 100;
+      const dimScores = dims.map(function(d) {
+        const soma = d.qs.reduce(function(acc, qi) {
+          return acc + valores[qi - 1];
+        }, 0);
+        const media = soma / d.qs.length;
+        return Math.round(media * 100) / 100;
       });
 
       return { valores, total, perc, cls, dimScores };
@@ -266,11 +303,12 @@
       const tbody = document.getElementById('tbodyResumo');
       tbody.innerHTML = '';
 
-      valores.forEach((v, i) => {
+      valores.forEach(function(v, i) {
         const tr = document.createElement('tr');
-        tr.className = i % 2 ? 'bg-white' : 'bg-gray-50';
-        const letra = ['D','C','B','A'][v];
-        const cor = v >= 2 ? 'text-green-700' : (v === 1 ? 'text-yellow-700' : 'text-red-700');
+        tr.className = i % 2 ? 'bg-gray-800' : 'bg-gray-900';
+
+        const letra = ['D', 'C', 'B', 'A'][v];
+        const cor = v >= 2 ? 'text-green-400' : (v === 1 ? 'text-yellow-400' : 'text-red-400');
 
         tr.innerHTML = `
           <td class="p-2">${i + 1}</td>
@@ -281,8 +319,6 @@
         tbody.appendChild(tr);
       });
     }
-
-    let chartGeral, chartDim;
 
     function desenharGraficos(total, perc, dimScores) {
       const geralCtx = document.getElementById('chartGeral').getContext('2d');
@@ -302,8 +338,7 @@
         options: {
           responsive: true,
           plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true }
+            legend: { display: false }
           },
           cutout: '60%'
         }
@@ -312,9 +347,9 @@
       chartDim = new Chart(dimCtx, {
         type: 'radar',
         data: {
-          labels: dims.map(d => d.nome),
+          labels: dims.map(function(d) { return d.nome; }),
           datasets: [{
-            label: 'Média (0–3)',
+            label: 'Média (0-3)',
             data: dimScores,
             pointRadius: 3,
             pointHoverRadius: 4,
@@ -351,31 +386,31 @@
       const r = calcResultados();
 
       let mensagem = '';
-      mensagem += 'QUESTIONÁRIO NR-1 – PSICOSSOCIAL%0A%0A';
-      mensagem += 'Nome: ' + nome + '%0A';
-      mensagem += 'CPF: ' + cpf + '%0A';
-      mensagem += 'Cargo/Função: ' + cargo + '%0A';
-      mensagem += 'Empresa/CNPJ: ' + empresa + '%0A';
-      mensagem += 'Data: ' + data + '%0A%0A';
+      mensagem += 'QUESTIONÁRIO NR-1 - PSICOSSOCIAL\n\n';
+      mensagem += 'Nome: ' + nome + '\n';
+      mensagem += 'CPF: ' + cpf + '\n';
+      mensagem += 'Cargo/Função: ' + cargo + '\n';
+      mensagem += 'Empresa/CNPJ: ' + empresa + '\n';
+      mensagem += 'Data: ' + data + '\n\n';
 
       if (!r.erro) {
-        mensagem += 'Pontuação total: ' + r.total + ' / 60%0A';
-        mensagem += 'Percentual: ' + r.perc + '%25%0A';
-        mensagem += 'Classificação: ' + r.cls + '%0A%0A';
+        mensagem += 'Pontuação total: ' + r.total + ' / 60\n';
+        mensagem += 'Percentual: ' + r.perc + '%\n';
+        mensagem += 'Classificação: ' + r.cls + '\n\n';
       }
 
-      mensagem += 'Respostas:%0A';
+      mensagem += 'Respostas:\n';
 
       for (let i = 1; i <= 20; i++) {
         const v = getValue('q' + i);
         const resposta = v === null ? 'Não respondida' : obterTextoResposta(v);
-        mensagem += i + '. ' + resposta + '%0A';
+        mensagem += i + '. ' + resposta + '\n';
       }
 
       return mensagem;
     }
 
-    document.getElementById('btnCalcular').addEventListener('click', () => {
+    document.getElementById('btnCalcular').addEventListener('click', function() {
       const r = calcResultados();
 
       if (r.erro) {
@@ -398,9 +433,12 @@
       }
     });
 
-    document.getElementById('btnLimpar').addEventListener('click', () => {
+    document.getElementById('btnLimpar').addEventListener('click', function() {
       for (let i = 1; i <= 20; i++) {
-        document.querySelectorAll(\`input[name="q\${i}"]\`).forEach(r => r.checked = false);
+        const radios = document.querySelectorAll('input[name="q' + i + '"]');
+        radios.forEach(function(radio) {
+          radio.checked = false;
+        });
       }
 
       document.getElementById('resultadoCard').classList.add('hidden');
@@ -409,26 +447,29 @@
       document.getElementById('classificacao').textContent = '—';
       document.getElementById('tbodyResumo').innerHTML = '';
 
-      if (chartGeral) chartGeral.destroy();
-      if (chartDim) chartDim.destroy();
+      if (chartGeral) {
+        chartGeral.destroy();
+        chartGeral = null;
+      }
+
+      if (chartDim) {
+        chartDim.destroy();
+        chartDim = null;
+      }
     });
 
-    document.getElementById('btnWhatsApp').addEventListener('click', () => {
+    document.getElementById('btnWhatsApp').addEventListener('click', function() {
       const mensagem = montarMensagemFormulario();
       const numero = '551433224141';
-      const url = `https://wa.me/${numero}?text=${mensagem}`;
+      const url = 'https://wa.me/' + numero + '?text=' + encodeURIComponent(mensagem);
       window.open(url, '_blank');
     });
 
-    document.getElementById('btnEmail').addEventListener('click', () => {
-      const mensagem = montarMensagemFormulario()
-        .replace(/%0A/g, '\n')
-        .replace(/%25/g, '%');
-
+    document.getElementById('btnEmail').addEventListener('click', function() {
+      const mensagem = montarMensagemFormulario();
       const assunto = encodeURIComponent('Questionário NR-1 Psicossocial');
       const corpo = encodeURIComponent(mensagem);
-
-      window.location.href = `mailto:saude7@gmail.com?subject=${assunto}&body=${corpo}`;
+      window.location.href = 'mailto:saude7@gmail.com?subject=' + assunto + '&body=' + corpo;
     });
 
     renderQuestions();
@@ -441,17 +482,8 @@
 
     function ajustarCanvas() {
       const rect = canvas.getBoundingClientRect();
-      const imagemAtual = canvas.toDataURL();
-
       canvas.width = rect.width;
       canvas.height = rect.height;
-
-      const img = new Image();
-      img.onload = function () {
-        ctx.drawImage(img, 0, 0);
-      };
-      img.src = imagemAtual;
-
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.strokeStyle = '#111827';
@@ -459,12 +491,14 @@
 
     function getPos(e) {
       const rect = canvas.getBoundingClientRect();
+
       if (e.touches && e.touches.length > 0) {
         return {
           x: e.touches[0].clientX - rect.left,
           y: e.touches[0].clientY - rect.top
         };
       }
+
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
@@ -497,7 +531,7 @@
     ajustarCanvas();
     window.addEventListener('resize', ajustarCanvas);
 
-    canvas.addEventListener('touchstart', iniciarDesenho);
+    canvas.addEventListener('touchstart', iniciarDesenho, { passive: false });
     canvas.addEventListener('touchmove', desenhar, { passive: false });
     canvas.addEventListener('touchend', pararDesenho);
 
