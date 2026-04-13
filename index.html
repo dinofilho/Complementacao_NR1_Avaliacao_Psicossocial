@@ -94,6 +94,119 @@
       border-bottom: 1px solid #6b7280;
       margin-bottom: 6px;
     }
+
+    /* BOTÃO FLUTUANTE PRINCIPAL */
+    .btn-flutuante-globalled {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 9999;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      color: #08332d;
+      background: linear-gradient(135deg, #19f0d2, #11c7b0);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+      animation: pulseGloballed 1.8s infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      overflow: hidden;
+    }
+
+    .btn-flutuante-globalled:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.40);
+    }
+
+    .btn-flutuante-globalled::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: 999px;
+      background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.28) 50%,
+        rgba(255,255,255,0) 100%
+      );
+      transform: translateX(-120%);
+      animation: brilhoGloballed 2.6s infinite;
+    }
+
+    .btn-flutuante-globalled span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* BOTÃO REDONDO PREMIUM */
+    .btn-icone-globalled {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 9998;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #19f0d2, #11c7b0);
+      color: #08332d;
+      font-size: 24px;
+      font-weight: bold;
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+      animation: pulseGloballed 2s infinite;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .btn-icone-globalled:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.40);
+    }
+
+    @keyframes pulseGloballed {
+      0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(25, 240, 210, 0.50);
+      }
+      70% {
+        transform: scale(1.03);
+        box-shadow: 0 0 0 16px rgba(25, 240, 210, 0);
+      }
+      100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(25, 240, 210, 0);
+      }
+    }
+
+    @keyframes brilhoGloballed {
+      0% { transform: translateX(-120%); }
+      100% { transform: translateX(120%); }
+    }
+
+    @media (max-width: 640px) {
+      .btn-flutuante-globalled {
+        right: 12px;
+        bottom: 12px;
+        padding: 12px 14px;
+        font-size: 13px;
+        max-width: calc(100vw - 90px);
+      }
+
+      .btn-icone-globalled {
+        left: 12px;
+        bottom: 12px;
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -101,8 +214,8 @@
     <div class="max-w-5xl mx-auto px-4">
       <div class="flex items-center gap-4">
         <div style="width:72px;height:72px;border-radius:16px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-  <img src="img/logo.gif" alt="GLOBALLED SST" style="width:88%;height:auto;display:block;">
-</div>
+          <img src="img/logo.gif" alt="GLOBALLED SST" style="width:88%;height:auto;display:block;">
+        </div>
 
         <div>
           <h1 class="text-xl sm:text-2xl font-bold leading-tight">GLOBALLED SST</h1>
@@ -483,16 +596,16 @@
           <div class="card-pdf">
             <div style="display:flex; align-items:center; gap:14px; margin-bottom:14px;">
               <div
-  style="width:70px;
-  height:70px;
-  border-radius:14px;
-  background:#111;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;">
-  <img src="img/logo.gif" alt="GLOBALLED SST" style="width:88%;height:auto;display:block;">
-</div>
+                style="width:70px;
+                height:70px;
+                border-radius:14px;
+                background:#111;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                overflow:hidden;">
+                <img src="img/logo.gif" alt="GLOBALLED SST" style="width:88%;height:auto;display:block;">
+              </div>
               <div>
                 <h1 style="font-size:20px; font-weight:bold; margin:0;">
                   GLOBALLED SST
@@ -731,5 +844,21 @@
     canvas.addEventListener('mouseup', pararDesenho);
     canvas.addEventListener('mouseleave', pararDesenho);
   </script>
+
+  <a
+    href="https://globalledsst.com.br"
+    class="btn-flutuante-globalled no-print"
+    title="Ir para o site GLOBALLEDSST"
+  >
+    <span>🚀 SITE GLOBALLED</span>
+  </a>
+
+  <a
+    href="https://globalledsst.com.br"
+    class="btn-icone-globalled no-print"
+    title="Ir para o site GLOBALLEDSST"
+  >
+    ⌂
+  </a>
 </body>
 </html>
